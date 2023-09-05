@@ -56,7 +56,7 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-[90vw] xl:max-w-7xl">
         <DialogHeader>
-          <DialogTitle>Differ preview</DialogTitle>
+          <DialogTitle>Differ View</DialogTitle>
           <DialogDescription>{descriptionArray.join(" · ")}</DialogDescription>
         </DialogHeader>
 

@@ -29,7 +29,7 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
       </Head>
 
       <header className=" container my-12">
-        <h1 className="mb-4 text-4xl font-medium">Differ preview</h1>
+        <h1 className="mb-4 text-4xl font-medium">Differ View</h1>
         <p className="text-sm font-light">{descriptionArray.join(" · ")}</p>
       </header>
 
