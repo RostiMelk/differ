@@ -18,7 +18,7 @@ export type GroqedImage = Image & {
 export interface SanitySnapshotObj {
   _type: "snapshotObj";
   url?: string;
-  image?: GroqedImage;
+  image?: Image;
   metadata?: string;
   body?: string;
 }

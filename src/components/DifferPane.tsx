@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { urlForImage } from "@/sanity/lib/image";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableCell, TableHead, TableRow } from "@/components/ui/table";
-import type { SanitySnapshotObj } from "@/lib/types";
+import type { SanitySnapshotObj, GroqedImage } from "@/lib/types";
 import { extractSEOMetadata } from "@/lib/utils";
 
 interface DifferPaneProps {
@@ -22,6 +22,7 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
   if (!snapshot) return null;
 
   const url = snapshot?.url ?? "";
+  const image = snapshot?.image as GroqedImage;
 
   return (
     <div>
@@ -38,15 +39,15 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
         ))}
       </Table>
 
-      {snapshot?.image && (
+      {image && (
         <Image
-          src={urlForImage(snapshot?.image).url()}
+          src={urlForImage(image).url()}
           alt="Before"
           className="w-full rounded-md border border-gray-200"
           placeholder="blur"
-          blurDataURL={snapshot?.image.asset.metadata.lqip}
-          width={snapshot?.image.asset.metadata.dimensions.width}
-          height={snapshot?.image.asset.metadata.dimensions.height}
+          blurDataURL={image.asset.metadata.lqip}
+          width={image.asset.metadata.dimensions.width}
+          height={image.asset.metadata.dimensions.height}
         />
       )}
     </div>

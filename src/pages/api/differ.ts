@@ -162,6 +162,7 @@ function compareMetadata(before: string, after: string): boolean {
   const beforeMetadata = extractSEOMetadata(before);
   const afterMetadata = extractSEOMetadata(after);
   return Object.keys(beforeMetadata).every(
+    // @ts-expect-error We know that types are the same
     (key) => beforeMetadata[key] === afterMetadata[key],
   );
 }
