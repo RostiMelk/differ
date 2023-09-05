@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { privateClient } from "@/sanity/lib/client";
-import { chromium } from "playwright";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import { differSchema } from "@/lib/types";
 import looksSame from "looks-same";
 import type {
@@ -94,6 +95,61 @@ export default async function differ(
   }
 }
 
+// async function getSnapshot(
+//   beforeUrl: string,
+//   afterUrl: string,
+// ): Promise<PuppeteerSnapshots> {
+//   // Options
+//   const imageOptions: Parameters<typeof page.screenshot>[0] = {
+//     fullPage: true,
+//     type: "jpeg",
+//     quality: 90,
+//   };
+//   const timeout = 3000;
+//   const injectedStyle = `
+//     *,
+//     *::before,
+//     *::after {
+//       transition-duration: 0s !important;
+//       animation-duration: 0s !important;
+//       transition-delay: 0s !important;
+//       animation-delay: 0s !important;
+//     }
+//     [class*="osano"] {
+//       display: none !important;
+//     }
+//   `;
+
+//   // Init browser
+//   const browser = await chromium.launch();
+//   const context = await browser.newContext();
+//   const page = await context.newPage();
+//   await page.setViewportSize({ width: 1280, height: 720 });
+
+//   const getSnapshotForUrl = async (url: string) => {
+//     await page.goto(url);
+//     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+//     await page.waitForTimeout(timeout);
+//     await page.evaluate(() => window.scrollTo(0, 0));
+//     await page.addStyleTag({ content: injectedStyle });
+//     const image = await page.screenshot(imageOptions);
+//     const html = await page.content();
+//     const metadata = extractMetadata(html);
+//     const body = extractBody(html);
+//     return { image, metadata, body };
+//   };
+
+//   const before = await getSnapshotForUrl(beforeUrl);
+//   const after = await getSnapshotForUrl(afterUrl);
+
+//   await browser.close();
+
+//   return {
+//     before,
+//     after,
+//   };
+// }
+
 async function getSnapshot(
   beforeUrl: string,
   afterUrl: string,
@@ -105,33 +161,24 @@ async function getSnapshot(
     quality: 90,
   };
   const timeout = 3000;
-  const injectedStyle = `
-    *,
-    *::before,
-    *::after {
-      transition-duration: 0s !important;
-      animation-duration: 0s !important;
-      transition-delay: 0s !important;
-      animation-delay: 0s !important;
-    }
-    [class*="osano"] {
-      display: none !important;
-    }
-  `;
 
   // Init browser
-  const browser = await chromium.launch();
-  const context = await browser.newContext();
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath:
+      process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
+    headless: true,
+  });
+  const context = await browser.createIncognitoBrowserContext();
   const page = await context.newPage();
-  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.setViewport({ width: 1280, height: 720 });
 
   const getSnapshotForUrl = async (url: string) => {
     await page.goto(url);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(timeout);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.addStyleTag({ content: injectedStyle });
-    const image = await page.screenshot(imageOptions);
+    const image = (await page.screenshot(imageOptions)) as Buffer;
     const html = await page.content();
     const metadata = extractMetadata(html);
     const body = extractBody(html);
