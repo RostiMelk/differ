@@ -126,10 +126,15 @@ export const DifferRowForm = ({
             )}
 
             {state === "error" && (
-              <div className="flex items-center gap-1 px-1 py-2 text-red-600">
-                <ServerCrash className="h-4 w-4" />
-                Error!
-              </div>
+              <Button
+                type="submit"
+                variant="outline"
+                className="text-red-600"
+                title="Server error, click to retry"
+              >
+                <ServerCrash className="mr-2 h-4 w-4" />
+                Retry
+              </Button>
             )}
 
             {showSubmit && (
