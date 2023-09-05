@@ -35,8 +35,6 @@ Before you get started, ensure that you have:
 
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
    Now, head over to [http://localhost:3000](http://localhost:3000) in your browser to see Differ in action.
