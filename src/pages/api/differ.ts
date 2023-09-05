@@ -180,7 +180,6 @@ async function compareImages(
     ignoreCaret: true,
     ignoreAntialiasing: true,
     createDiffImage: true,
-    tolerance: 5,
   });
   if (!diffImage) {
     return { looksEqual: equal };
