@@ -115,7 +115,7 @@ async function getSnapshot(
     type: "jpeg",
     quality: 90,
   };
-  const timeout = 3000;
+  const timeout = 5000;
   const injectedStyle = `
     *,
     *::before,
@@ -149,6 +149,8 @@ async function getSnapshot(
     await page.addStyleTag({ content: injectedStyle });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(timeout);
+    // wait for page to settle or images to load
+
     await page.evaluate(() => window.scrollTo(0, 0));
     const image = (await page.screenshot(imageOptions)) as Buffer;
     const html = await page.content();
