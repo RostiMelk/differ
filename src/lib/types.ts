@@ -30,7 +30,6 @@ export interface SanitySnapshot {
   visualDiff?: boolean;
   metadataDiff?: boolean;
   bodyDiff?: boolean;
-  diffImage?: Image;
   before?: SanitySnapshotObj;
   after?: SanitySnapshotObj;
 }

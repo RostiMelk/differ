@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from "next";
 import { client } from "@/sanity/lib/client";
 import { snapshotQuery } from "@/sanity/queries/snapshot";
-import { type GroqedImage, type SanitySnapshot } from "@/lib/types";
+import { type SanitySnapshot } from "@/lib/types";
 import { Footer } from "@/components/Footer";
 import { DifferPane } from "@/components/DifferPane";
 import { DynamicHead } from "@/components/DynamicHead";
@@ -14,7 +14,6 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
     dateStyle: "medium",
     timeStyle: "short",
   });
-  const diffImage = snapshot?.diffImage as GroqedImage | undefined;
 
   const descriptionArray = [
     visualDiff ? "Visually differs" : "Visually identical",
@@ -40,7 +39,7 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
       <main className="container">
         <div className="grid grid-cols-2 gap-4 overflow-y-auto">
           <DifferPane snapshot={snapshot.before} />
-          <DifferPane snapshot={snapshot.after} diffImage={diffImage} />
+          <DifferPane snapshot={snapshot.after} />
         </div>
       </main>
 

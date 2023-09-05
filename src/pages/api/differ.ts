@@ -71,21 +71,12 @@ export default async function differ(
       };
     };
 
+    if (diffImage) {
+      after.image = diffImage;
+    }
+
     const beforeObj = await createSnapshotObj(beforeUrl, before);
     const afterObj = await createSnapshotObj(afterUrl, after);
-
-    let diffImageRefAsset;
-    let diffImageRef;
-    if (diffImage) {
-      diffImageRefAsset = await privateClient.assets.upload("image", diffImage);
-      diffImageRef = {
-        _type: "image",
-        asset: {
-          _type: "reference",
-          _ref: diffImageRefAsset._id,
-        },
-      };
-    }
 
     await privateClient.createOrReplace({
       _id,
@@ -94,7 +85,6 @@ export default async function differ(
       visualDiff: !looksEqual,
       metadataDiff: !metaIsEqual,
       bodyDiff: !bodyIsEqual,
-      diffImage: diffImageRef,
       before: beforeObj,
       after: afterObj,
     } satisfies SanitySnapshot);
