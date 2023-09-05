@@ -1,6 +1,6 @@
-import type { GetStaticPaths, GetStaticProps } from "next";
+import type { GetServerSideProps } from "next";
 import { client } from "@/sanity/lib/client";
-import { allSnapshotIds, snapshotQuery } from "@/sanity/queries/snapshot";
+import { snapshotQuery } from "@/sanity/queries/snapshot";
 import { type SanitySnapshot } from "@/lib/types";
 import { Footer } from "@/components/Footer";
 import { DifferPane } from "@/components/DifferPane";
@@ -45,16 +45,7 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths: string[] = await client.fetch(allSnapshotIds);
-
-  return {
-    paths: paths.map((id) => ({ params: { id } })),
-    fallback: false,
-  };
-};
-
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id = "" } = context.params ?? {};
   const snapshot: SanitySnapshot = await client.fetch(snapshotQuery, { id });
 
