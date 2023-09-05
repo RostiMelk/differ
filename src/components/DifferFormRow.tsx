@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { differSchema, type DifferSchema } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Diff, Loader2 } from "lucide-react";
+import { Check, Diff, Loader2, ServerCrash } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-export type State = "idle" | "loading" | "identical" | "different";
+export type State = "idle" | "loading" | "identical" | "different" | "error";
 
 interface DifferRowFormProps {
   onSubmitRow: (data: DifferSchema) => Promise<void>;
@@ -123,6 +123,13 @@ export const DifferRowForm = ({
               >
                 <Diff className="h-4 w-4" />
               </Button>
+            )}
+
+            {state === "error" && (
+              <div className="flex items-center gap-1 px-1 py-2 text-red-600">
+                <ServerCrash className="h-4 w-4" />
+                Error!
+              </div>
             )}
 
             {showSubmit && (

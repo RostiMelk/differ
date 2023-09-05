@@ -45,8 +45,15 @@ export const DifferForm = ({
       method: "POST",
       body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      setFormState(idx, { state: "error" });
+      return;
+    }
+
     const { _id, visualDiff, metadataDiff } =
       (await response.json()) as DifferResponse;
+
     const newState = visualDiff || metadataDiff ? "different" : "identical";
     setFormState(idx, { id: _id, state: newState });
   };
