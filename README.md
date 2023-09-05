@@ -1,6 +1,6 @@
 # Differ: Web Page Comparer
 
-![Screenshot](https://github.com/RostiMelk/differ/assets/25268506/eeda8abf-a653-4ffa-b690-d164baad2d25)
+![Screenshot](https://github.com/RostiMelk/differ/assets/25268506/7924e133-fc71-4ba1-8711-94b9e63434c2)
 
 **Differ** is a tool for comparing two web pages.
 
