@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { privateClient } from "@/sanity/lib/client";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
+import { privateClient } from "@/sanity/lib/client";
 import { differSchema } from "@/lib/types";
 import looksSame from "looks-same";
 import type {
