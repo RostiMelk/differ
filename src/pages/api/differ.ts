@@ -142,11 +142,7 @@ async function getSnapshot(
 }
 
 async function compareImages(before: Buffer, after: Buffer): Promise<boolean> {
-  const { equal } = await looksSame(before, after, {
-    ignoreCaret: true,
-    ignoreAntialiasing: true,
-    tolerance: 1,
-  });
+  const { equal } = await looksSame(before, after);
   return equal;
 }
 
