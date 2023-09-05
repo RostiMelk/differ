@@ -242,5 +242,6 @@ function extractBody(html: string): string {
     /<iframe.*?<\/iframe>/gs,
     "",
   );
-  return bodyWithNoIframes;
+  const bodyMinified = bodyWithNoIframes.replace(/\s+/g, " ");
+  return bodyMinified;
 }
