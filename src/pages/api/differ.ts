@@ -90,7 +90,9 @@ export default async function differ(
     } satisfies DifferResponse);
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ message: "Bad request" });
+    return res
+      .status(400)
+      .json({ message: "Bad request", error: JSON.stringify(err, null, 2) });
   }
 }
 
