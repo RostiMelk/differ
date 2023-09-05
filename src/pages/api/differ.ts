@@ -208,40 +208,35 @@ function compareBody(before: string, after: string): boolean {
   return before === after;
 }
 
+function stripContent(html: string, tags: string[]): string {
+  let result = html;
+  tags.forEach((tag) => {
+    const regex = new RegExp(`<${tag}.*?<\/${tag}>`, "gs");
+    result = result.replace(regex, "");
+  });
+  return result;
+}
+
 function extractMetadata(html: string): string {
-  const metadata = html.match(/<head>(.*)<\/head>/s)?.[1] ?? "";
-  const metadataWithoutScripts = metadata.replace(/<script.*?<\/script>/gs, "");
-  const metadataWithoutStyles = metadataWithoutScripts.replace(
-    /<style.*?<\/style>/gs,
-    "",
-  );
-  return metadataWithoutStyles;
+  return stripContent(html.match(/<head>(.*)<\/head>/s)?.[1] ?? "", [
+    "script",
+    "style",
+  ]);
 }
 
 function extractBody(html: string): string {
-  const body = html.match(/<body.*?>(.*)<\/body>/s)?.[1] ?? "";
-  const bodyWithoutScripts = body.replace(/<script.*?<\/script>/gs, "");
-  const bodyWithoutStyles = bodyWithoutScripts.replace(
-    /<style.*?<\/style>/gs,
-    "",
-  );
-  const bodyWithNoHostNames = bodyWithoutStyles.replace(
-    /https?:\/\/[^/]+/g,
-    "ANONYMOUS_HOSTNAME",
-  );
-  const bodyWithNoComments = bodyWithNoHostNames.replace(/<!--.*?-->/gs, "");
-  const bodyWithNoIds = bodyWithNoComments.replace(
-    /id=".*?"/gs,
-    'id="ANONYMOUS_ID"',
-  );
-  const bodyWithNoDescribedby = bodyWithNoIds.replace(
-    /aria-.*?by=".*?"/gs,
-    'aria-ANONYMOUS_BY="ANONYMOUS_ID"',
-  );
-  const bodyWithNoIframes = bodyWithNoDescribedby.replace(
-    /<iframe.*?<\/iframe>/gs,
-    "",
-  );
-  const bodyMinified = bodyWithNoIframes.replace(/\s+/g, " ");
-  return bodyMinified;
+  let body = stripContent(html.match(/<body.*?>(.*)<\/body>/s)?.[1] ?? "", [
+    "script",
+    "style",
+    "iframe",
+  ]);
+
+  body = body
+    .replace(/https?:\/\/[^/]+/g, "ANONYMOUS_HOSTNAME")
+    .replace(/<!--.*?-->/gs, "")
+    .replace(/id=".*?"/gs, 'id="ANONYMOUS_ID"')
+    .replace(/aria-.*?by=".*?"/gs, 'aria-ANONYMOUS_BY="ANONYMOUS_ID"')
+    .replace(/\s+/g, " ");
+
+  return body;
 }
