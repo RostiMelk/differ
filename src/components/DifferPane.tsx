@@ -8,7 +8,7 @@ import { extractSEOMetadata } from "@/lib/utils";
 
 interface DifferPaneProps {
   snapshot?: SanitySnapshotObj;
-  diffImage: GroqedImage;
+  diffImage?: GroqedImage;
 }
 
 export const DifferPane = ({ snapshot, diffImage }: DifferPaneProps) => {
