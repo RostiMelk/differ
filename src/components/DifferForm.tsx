@@ -98,7 +98,7 @@ export const DifferForm = ({
           return values;
         }
       })
-      .filter((value): value is DifferSchema => value != null);
+      .filter((value) => value !== null) as DifferSchema[];
 
     const newAllFormValues = [...allFormValues];
     newAllFormValues.splice(idx, 0, ...values);

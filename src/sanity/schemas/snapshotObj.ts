@@ -27,8 +27,9 @@ export default defineType({
       url: "url",
     },
     prepare(selection) {
+      const url = selection?.url as string | undefined;
       return {
-        title: selection?.url || "No URL",
+        title: url ?? "No URL",
       };
     },
   },

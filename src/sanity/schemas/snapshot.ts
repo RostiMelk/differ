@@ -36,8 +36,14 @@ export default defineType({
       date: "date",
     },
     prepare(selection) {
+      const date = selection?.date as string | undefined;
+      const formattedDate = new Date(date ?? 0).toLocaleString("nb-NO", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+
       return {
-        title: selection?.date || "No date",
+        title: date ? formattedDate : "No date",
       };
     },
   },
