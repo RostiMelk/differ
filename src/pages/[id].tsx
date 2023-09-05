@@ -10,7 +10,7 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
   const visualDiff = snapshot?.visualDiff;
   const seoDiff = snapshot?.metadataDiff;
   const bodyDiff = snapshot?.bodyDiff;
-  const formattedDate = new Date(snapshot?.date).toLocaleString("nb-NO", {
+  const formattedDate = new Date(snapshot?.date ?? 0).toLocaleString("nb-NO", {
     dateStyle: "medium",
     timeStyle: "short",
   });
