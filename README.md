@@ -14,7 +14,7 @@
 Before you get started, ensure that you have:
 
 - Node.js (v14 or newer)
-- npm (v6 or newer) or Yarn
+- npm (v6 or newer)
 
 ## Getting Started
 
