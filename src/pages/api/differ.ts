@@ -157,6 +157,7 @@ async function getSnapshot(
   const before = await getSnapshotForUrl(beforeUrl);
   const after = await getSnapshotForUrl(afterUrl);
 
+  await context.close();
   await browser.close();
 
   return {
