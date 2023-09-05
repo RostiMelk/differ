@@ -63,7 +63,7 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
         {differ && (
           <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto">
             <DifferPane snapshot={differ.before} />
-            <DifferPane snapshot={differ.after} />
+            <DifferPane snapshot={differ.after} diffImage={differ.diffImage} />
           </div>
         )}
 

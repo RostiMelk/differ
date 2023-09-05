@@ -23,6 +23,10 @@ export default defineType({
       type: "boolean",
     }),
     defineField({
+      name: "diffImage",
+      type: "image",
+    }),
+    defineField({
       name: "before",
       type: "snapshotObj",
     }),

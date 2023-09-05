@@ -39,7 +39,10 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
       <main className="container">
         <div className="grid grid-cols-2 gap-4 overflow-y-auto">
           <DifferPane snapshot={snapshot.before} />
-          <DifferPane snapshot={snapshot.after} />
+          <DifferPane
+            snapshot={snapshot.after}
+            diffImage={snapshot.diffImage}
+          />
         </div>
       </main>
 

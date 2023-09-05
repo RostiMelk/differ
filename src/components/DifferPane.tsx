@@ -8,9 +8,10 @@ import { extractSEOMetadata } from "@/lib/utils";
 
 interface DifferPaneProps {
   snapshot?: SanitySnapshotObj;
+  diffImage: GroqedImage;
 }
 
-export const DifferPane = ({ snapshot }: DifferPaneProps) => {
+export const DifferPane = ({ snapshot, diffImage }: DifferPaneProps) => {
   const [metadataObj, setMetadataObj] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
   if (!snapshot) return null;
 
   const url = snapshot?.url ?? "";
-  const image = snapshot?.image as GroqedImage;
+  const image = diffImage ?? (snapshot?.image as GroqedImage);
 
   return (
     <div>

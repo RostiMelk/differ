@@ -64,16 +64,20 @@ export const DifferForm = ({
       forms.map((form, idx) => ({
         ...form,
         state:
-          allFormValues[idx]?.beforeUrl && allFormValues[idx]?.afterUrl
+          allFormValues[idx]?.beforeUrl &&
+          allFormValues[idx]?.afterUrl &&
+          form.state === "idle"
             ? "loading"
-            : "idle",
+            : form.state,
       })),
     );
 
     for (let i = 0; i < formCount; i++) {
       const data = allFormValues[i];
-      if (!data) continue;
-      await handleFormSubmit(data, i);
+      if (!data || !forms[i]) continue;
+      if (forms[i]?.state === "loading") {
+        await handleFormSubmit(data, i);
+      }
     }
   };
 
@@ -165,7 +169,7 @@ export const DifferForm = ({
       <footer className="mt-14 flex items-center gap-4">
         <Button
           type="submit"
-          disabled={forms.some((form) => form.state !== "idle")}
+          disabled={forms.some((form) => form.state === "loading")}
           onClick={handleAllSubmit}
         >
           {forms.every((form) => form.state === "loading") && (

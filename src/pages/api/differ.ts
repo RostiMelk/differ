@@ -44,7 +44,10 @@ export default async function differ(
     const { before, after } = await getSnapshot(beforeUrl, afterUrl);
 
     // Compare everything
-    const looksEqual = await compareImages(before.image, after.image);
+    const { looksEqual, diffImage } = await compareImages(
+      before.image,
+      after.image,
+    );
     const metaIsEqual = compareMetadata(before.metadata, after.metadata);
     const bodyIsEqual = compareBody(before.body, after.body);
 
@@ -71,6 +74,19 @@ export default async function differ(
     const beforeObj = await createSnapshotObj(beforeUrl, before);
     const afterObj = await createSnapshotObj(afterUrl, after);
 
+    let diffImageRefAsset;
+    let diffImageRef;
+    if (diffImage) {
+      diffImageRefAsset = await privateClient.assets.upload("image", diffImage);
+      diffImageRef = {
+        _type: "image",
+        asset: {
+          _type: "reference",
+          _ref: diffImageRefAsset._id,
+        },
+      };
+    }
+
     await privateClient.createOrReplace({
       _id,
       _type: "snapshot",
@@ -78,6 +94,7 @@ export default async function differ(
       visualDiff: !looksEqual,
       metadataDiff: !metaIsEqual,
       bodyDiff: !bodyIsEqual,
+      diffImage: diffImageRef,
       before: beforeObj,
       after: afterObj,
     } satisfies SanitySnapshot);
@@ -106,12 +123,28 @@ async function getSnapshot(
     quality: 90,
   };
   const timeout = 3000;
+  const injectedStyle = `
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0s !important;
+      animation-duration: 0s !important;
+      transition-delay: 0s !important;
+      animation-delay: 0s !important;
+    }
+    svg * {
+      animation: none !important;
+    }
+    [class*="osano"] {
+      display: none !important;
+    }
+  `;
 
   // Init browser
+  const isProd = process.env.NODE_ENV === "production";
   const browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath:
-      process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
+    args: isProd ? chromium.args : undefined,
+    executablePath: isProd ? await chromium.executablePath() : undefined,
     headless: true,
   });
   const context = await browser.createIncognitoBrowserContext();
@@ -120,6 +153,7 @@ async function getSnapshot(
 
   const getSnapshotForUrl = async (url: string) => {
     await page.goto(url);
+    await page.addStyleTag({ content: injectedStyle });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(timeout);
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -141,9 +175,24 @@ async function getSnapshot(
   };
 }
 
-async function compareImages(before: Buffer, after: Buffer): Promise<boolean> {
-  const { equal } = await looksSame(before, after);
-  return equal;
+async function compareImages(
+  before: Buffer,
+  after: Buffer,
+): Promise<{
+  looksEqual: boolean;
+  diffImage?: Buffer;
+}> {
+  const { equal, diffImage } = await looksSame(before, after, {
+    ignoreCaret: true,
+    ignoreAntialiasing: true,
+    createDiffImage: true,
+    tolerance: 5,
+  });
+  if (!diffImage) {
+    return { looksEqual: equal };
+  }
+  const diffImageBuffer = await diffImage?.createBuffer("png");
+  return { looksEqual: equal, diffImage: diffImageBuffer };
 }
 
 function compareMetadata(before: string, after: string): boolean {
@@ -176,5 +225,22 @@ function extractBody(html: string): string {
     /<style.*?<\/style>/gs,
     "",
   );
-  return bodyWithoutStyles;
+  const bodyWithNoHostNames = bodyWithoutStyles.replace(
+    /https?:\/\/[^/]+/g,
+    "ANONYMOUS_HOSTNAME",
+  );
+  const bodyWithNoComments = bodyWithNoHostNames.replace(/<!--.*?-->/gs, "");
+  const bodyWithNoIds = bodyWithNoComments.replace(
+    /id=".*?"/gs,
+    'id="ANONYMOUS_ID"',
+  );
+  const bodyWithNoDescribedby = bodyWithNoIds.replace(
+    /aria-.*?by=".*?"/gs,
+    'aria-ANONYMOUS_BY="ANONYMOUS_ID"',
+  );
+  const bodyWithNoIframes = bodyWithNoDescribedby.replace(
+    /<iframe.*?<\/iframe>/gs,
+    "",
+  );
+  return bodyWithNoIframes;
 }
