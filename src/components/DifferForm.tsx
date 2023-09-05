@@ -75,7 +75,7 @@ export const DifferForm = ({
     for (let i = 0; i < formCount; i++) {
       const data = allFormValues[i];
       if (!data || !forms[i]) continue;
-      if (forms[i]?.state === "loading") {
+      if (forms[i]?.state === "idle") {
         await handleFormSubmit(data, i);
       }
     }
