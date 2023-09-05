@@ -1,5 +1,7 @@
 # Differ: Web Page Comparer
 
+![Screenshot](https://github.com/RostiMelk/differ/assets/25268506/eeda8abf-a653-4ffa-b690-d164baad2d25)
+
 **Differ** is a tool for comparing two web pages.
 
 ## Features
