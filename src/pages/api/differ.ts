@@ -88,11 +88,9 @@ export default async function differ(
       metadataDiff: !metaIsEqual,
       visualDiff: !looksEqual,
     } satisfies DifferResponse);
-  } catch (err) {
-    console.error(err);
-    return res
-      .status(400)
-      .json({ message: "Bad request", error: JSON.stringify(err, null, 2) });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: "Bad request", error });
   }
 }
 
