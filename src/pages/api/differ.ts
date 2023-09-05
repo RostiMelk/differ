@@ -44,10 +44,7 @@ export default async function differ(
     const { before, after } = await getSnapshot(beforeUrl, afterUrl);
 
     // Compare everything
-    const { looksEqual, diffImage } = await compareImages(
-      before.image,
-      after.image,
-    );
+    const compareRes = await compareImages(before.image, after.image);
     const metaIsEqual = compareMetadata(before.metadata, after.metadata);
     const bodyIsEqual = compareBody(before.body, after.body);
 
@@ -71,18 +68,24 @@ export default async function differ(
       };
     };
 
-    if (diffImage) {
-      after.image = diffImage;
+    if (compareRes.diffImage) {
+      after.image = compareRes.diffImage;
+      // Dispose of diff image buffer
+      compareRes.diffImage = Buffer.from("");
     }
 
     const beforeObj = await createSnapshotObj(beforeUrl, before);
     const afterObj = await createSnapshotObj(afterUrl, after);
 
+    // Dispose of image buffers
+    before.image = Buffer.from("");
+    after.image = Buffer.from("");
+
     await privateClient.createOrReplace({
       _id,
       _type: "snapshot",
       date: new Date().toISOString(),
-      visualDiff: !looksEqual,
+      visualDiff: !compareRes.looksEqual,
       metadataDiff: !metaIsEqual,
       bodyDiff: !bodyIsEqual,
       before: beforeObj,
@@ -94,7 +97,7 @@ export default async function differ(
       message: "Success",
       bodyDiff: !bodyIsEqual,
       metadataDiff: !metaIsEqual,
-      visualDiff: !looksEqual,
+      visualDiff: !compareRes.looksEqual,
     } satisfies DifferResponse);
   } catch (error) {
     console.error(error);
