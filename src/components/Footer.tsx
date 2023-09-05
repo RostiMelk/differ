@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Github } from "lucide-react";
+
 export const Footer = () => (
   <footer className="container py-16 text-center text-sm text-gray-500">
     <p className="flex items-center justify-center gap-1">

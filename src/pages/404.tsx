@@ -1,10 +1,10 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useRouter } from "next/router";
 import { ArrowLeft } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { DynamicHead } from "@/components/DynamicHead";
 
 const Snapshot = () => {
   const router = useRouter();
@@ -12,9 +12,7 @@ const Snapshot = () => {
 
   return (
     <>
-      <Head>
-        <title>Differ 404</title>
-      </Head>
+      <DynamicHead titleExtra="404" />
 
       <header className=" container my-12">
         <h1 className="mb-4 text-4xl font-medium">

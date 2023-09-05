@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { differSchema, type DifferSchema } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Diff, Loader2, ServerCrash } from "lucide-react";
+import { FileCheck, FileDiff, Loader2, ServerCrash } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 export type State = "idle" | "loading" | "identical" | "different" | "error";
@@ -109,7 +109,7 @@ export const DifferRowForm = ({
                 onClick={onPreview}
                 title="Identical, click to preview"
               >
-                <Check className="h-4 w-4" />
+                <FileCheck className="h-4 w-4" />
               </Button>
             )}
             {state === "different" && (
@@ -121,7 +121,7 @@ export const DifferRowForm = ({
                 onClick={onPreview}
                 title="Different, click to preview"
               >
-                <Diff className="h-4 w-4" />
+                <FileDiff className="h-4 w-4" />
               </Button>
             )}
 

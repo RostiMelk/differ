@@ -4,7 +4,7 @@ import { snapshotQuery } from "@/sanity/queries/snapshot";
 import { type SanitySnapshot } from "@/lib/types";
 import { Footer } from "@/components/Footer";
 import { DifferPane } from "@/components/DifferPane";
-import Head from "next/head";
+import { DynamicHead } from "@/components/DynamicHead";
 
 const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
   const visualDiff = snapshot?.visualDiff;
@@ -22,11 +22,14 @@ const Snapshot = ({ snapshot }: { snapshot: SanitySnapshot }) => {
     formattedDate,
   ];
 
+  const hasErrDiff = visualDiff || seoDiff;
+
   return (
     <>
-      <Head>
-        <title>Differ | {snapshot?._id}</title>
-      </Head>
+      <DynamicHead
+        titleExtra={snapshot?._id}
+        favicon={hasErrDiff ? "diff" : "equal"}
+      />
 
       <header className=" container my-12">
         <h1 className="mb-4 text-4xl font-medium">Differ View</h1>

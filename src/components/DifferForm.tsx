@@ -54,6 +54,7 @@ export const DifferForm = ({
     const { _id, visualDiff, metadataDiff } =
       (await response.json()) as DifferResponse;
 
+    // avoid diff on html, since this is mostly used as a warning
     const newState = visualDiff || metadataDiff ? "different" : "identical";
     setFormState(idx, { id: _id, state: newState });
   };

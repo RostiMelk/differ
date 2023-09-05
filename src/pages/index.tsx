@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Head from "next/head";
 import { DifferForm } from "@/components/DifferForm";
 import { DifferPreview } from "@/components/DifferPreview";
 import { Footer } from "@/components/Footer";
+import { DynamicHead } from "@/components/DynamicHead";
 
 export default function Home() {
   const [preview, setPreview] = useState<string | undefined>(undefined);
@@ -12,9 +12,8 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Differ</title>
-      </Head>
+      <DynamicHead />
+
       <header className="container py-16 text-center">
         <h1 className="text-5xl font-medium">Differ</h1>
         <p className="text-2xl font-light">
