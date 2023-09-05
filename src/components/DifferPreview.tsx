@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { type SanitySnapshot } from "@/lib/types";
+import { type GroqedImage, type SanitySnapshot } from "@/lib/types";
 import { DifferPane } from "@/components/DifferPane";
 import { snapshotQuery } from "@/sanity/queries/snapshot";
 import { ExternalLink, Redo } from "lucide-react";
@@ -44,6 +44,7 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
     dateStyle: "medium",
     timeStyle: "short",
   });
+  const diffImage = differ?.diffImage as GroqedImage | undefined;
 
   const descriptionArray = [
     visualDiff ? "Visually differs" : "Visually identical",
@@ -63,7 +64,7 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
         {differ && (
           <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto">
             <DifferPane snapshot={differ.before} />
-            <DifferPane snapshot={differ.after} diffImage={differ.diffImage} />
+            <DifferPane snapshot={differ.after} diffImage={diffImage} />
           </div>
         )}
 
