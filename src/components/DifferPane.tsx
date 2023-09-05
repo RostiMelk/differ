@@ -21,12 +21,12 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
 
   if (!snapshot) return null;
 
+  const url = snapshot?.url ?? "";
+
   return (
     <div>
       <Badge variant="secondary" className="sticky top-2 mx-auto mb-6 table">
-        {snapshot?.url.length > 50
-          ? snapshot?.url.substring(0, 50) + "..."
-          : snapshot?.url}
+        {url.length > 50 ? url.substring(0, 50) + "..." : url}
       </Badge>
 
       <Table className="mb-6">

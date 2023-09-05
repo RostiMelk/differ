@@ -1,5 +1,5 @@
 import * as z from "zod";
-import type { Image } from "sanity";
+import type { Image, ImageAsset } from "sanity";
 
 export const differSchema = z.object({
   beforeUrl: z.string().url(),
@@ -8,10 +8,17 @@ export const differSchema = z.object({
 
 export type DifferSchema = z.infer<typeof differSchema>;
 
+export type GroqedImage = Image & {
+  asset: ImageAsset & {
+    _id: string;
+    url: string;
+  };
+};
+
 export interface SanitySnapshotObj {
   _type: "snapshotObj";
   url?: string;
-  image?: Image;
+  image?: GroqedImage;
   metadata?: string;
   body?: string;
 }

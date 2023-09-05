@@ -40,7 +40,7 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
   const visualDiff = differ?.visualDiff;
   const seoDiff = differ?.metadataDiff;
   const bodyDiff = differ?.bodyDiff;
-  const formattedDate = new Date(differ?.date).toLocaleString("nb-NO", {
+  const formattedDate = new Date(differ?.date ?? 0).toLocaleString("nb-NO", {
     dateStyle: "medium",
     timeStyle: "short",
   });
