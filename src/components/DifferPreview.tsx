@@ -71,7 +71,7 @@ export const DifferPreview = ({
         </DialogHeader>
 
         {differ && (
-          <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto">
+          <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto overflow-x-hidden">
             <DifferPane snapshot={differ.before} />
             <DifferPane snapshot={differ.after} />
           </div>

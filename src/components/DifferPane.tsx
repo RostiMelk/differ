@@ -31,21 +31,12 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
       <Link href={url} passHref target="_blank">
         <Badge
           variant="secondary"
-          className="sticky top-2 mx-auto mb-6 table cursor-pointer hover:bg-slate-200 focus:bg-slate-300"
+          className="sticky top-2 mx-auto mb-4 table cursor-pointer hover:bg-slate-200 focus:bg-slate-300"
         >
           {url.length > 50 ? url.substring(0, 50) + "..." : url}
           <ArrowRight className="ml-1 inline h-3 w-3" />
         </Badge>
       </Link>
-
-      <Table className="mb-6">
-        {Object.keys(metadataObj).map((key) => (
-          <TableRow key={key}>
-            <TableHead>{key}</TableHead>
-            <TableCell>{metadataObj[key]}</TableCell>
-          </TableRow>
-        ))}
-      </Table>
 
       {image && (
         <Image
@@ -58,6 +49,18 @@ export const DifferPane = ({ snapshot }: DifferPaneProps) => {
           height={image.asset.metadata.dimensions.height}
         />
       )}
+
+      <h3 className="mb-2 mt-6 text-xl font-medium">SEO Metadata</h3>
+      <Table className="mb-6 [overflow-wrap:anywhere]">
+        {Object.keys(metadataObj).map((key) => (
+          <TableRow key={key}>
+            <TableHead className="[text-wrap:nowrap]">{key}</TableHead>
+            <TableCell className="[text-wrap:balance]">
+              {metadataObj[key]}
+            </TableCell>
+          </TableRow>
+        ))}
+      </Table>
     </div>
   );
 };
