@@ -39,3 +39,33 @@ export const extractSEOMetadata = async (htmlString?: string) => {
 
   return sortedMetadata;
 };
+
+export function isDeepEqual(objA: unknown, objB: unknown): boolean {
+  // Both are of primitive type or are equal
+  if (objA === objB) return true;
+
+  // One of them is null or undefined
+  if (!objA || !objB) return false;
+
+  // One of them is not an object
+  if (typeof objA !== "object" || typeof objB !== "object") return false;
+
+  const keysA = Object.keys(objA as Record<string, unknown>);
+  const keysB = Object.keys(objB as Record<string, unknown>);
+
+  // Different number of keys
+  if (keysA.length !== keysB.length) return false;
+
+  // Compare values recursively
+  for (const key of keysA) {
+    if (!Object.prototype.hasOwnProperty.call(objB, key)) return false;
+    if (
+      !isDeepEqual(
+        (objA as Record<string, unknown>)[key],
+        (objB as Record<string, unknown>)[key],
+      )
+    )
+      return false;
+  }
+  return true;
+}

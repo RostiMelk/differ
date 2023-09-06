@@ -9,7 +9,7 @@ import type {
   SanitySnapshotObj,
   DifferResponse,
 } from "@/lib/types";
-import { extractSEOMetadata } from "@/lib/utils";
+import { extractSEOMetadata, isDeepEqual } from "@/lib/utils";
 
 interface PuppeteerSnapshot {
   image: Buffer;
@@ -45,7 +45,7 @@ export default async function differ(
 
     // Compare everything
     const compareRes = await compareImages(before.image, after.image);
-    const metaIsEqual = compareMetadata(before.metadata, after.metadata);
+    const metaIsEqual = await compareMetadata(before.metadata, after.metadata);
     const bodyIsEqual = compareBody(before.body, after.body);
 
     const createSnapshotObj = async (
@@ -146,6 +146,7 @@ async function getSnapshot(
 
   const getSnapshotForUrl = async (url: string) => {
     await page.goto(url);
+
     await page.addStyleTag({ content: injectedStyle });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(timeout);
@@ -169,6 +170,26 @@ async function getSnapshot(
   };
 }
 
+// async function compareImages(
+//   before: Buffer,
+//   after: Buffer,
+// ): Promise<{
+//   looksEqual: boolean;
+//   diffImage?: Buffer;
+// }> {
+//   const { equal, diffImage } = await looksSame(before, after, {
+//     ignoreCaret: true,
+//     ignoreAntialiasing: true,
+//     createDiffImage: true,
+//     tolerance: 10,
+//   });
+//   if (!diffImage) {
+//     return { looksEqual: equal };
+//   }
+//   const diffImageBuffer = await diffImage?.createBuffer("png");
+//   return { looksEqual: equal, diffImage: diffImageBuffer };
+// }
+
 async function compareImages(
   before: Buffer,
   after: Buffer,
@@ -176,24 +197,34 @@ async function compareImages(
   looksEqual: boolean;
   diffImage?: Buffer;
 }> {
-  const { equal, diffImage } = await looksSame(before, after, {
+  const options = {
     ignoreCaret: true,
-    createDiffImage: true,
-  });
-  if (!diffImage) {
+    ignoreAntialiasing: true,
+    tolerance: 10,
+  };
+  const { equal } = await looksSame(before, after, options);
+
+  if (equal) {
     return { looksEqual: equal };
   }
-  const diffImageBuffer = await diffImage?.createBuffer("png");
-  return { looksEqual: equal, diffImage: diffImageBuffer };
+
+  const diffImage = await looksSame.createDiff({
+    reference: before,
+    current: after,
+    highlightColor: "#ff00ffB3",
+    ...options,
+  });
+
+  return { looksEqual: equal, diffImage };
 }
 
-function compareMetadata(before: string, after: string): boolean {
-  const beforeMetadata = extractSEOMetadata(before);
-  const afterMetadata = extractSEOMetadata(after);
-  return Object.keys(beforeMetadata).every(
-    // @ts-expect-error We know that types are the same
-    (key) => beforeMetadata[key] === afterMetadata[key],
-  );
+async function compareMetadata(
+  before: string,
+  after: string,
+): Promise<boolean> {
+  const beforeMetadata = await extractSEOMetadata(before);
+  const afterMetadata = await extractSEOMetadata(after);
+  return isDeepEqual(beforeMetadata, afterMetadata);
 }
 
 function compareBody(before: string, after: string): boolean {
