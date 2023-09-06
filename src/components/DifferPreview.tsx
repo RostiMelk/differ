@@ -19,6 +19,7 @@ interface DifferPreview {
   id: string;
   onClose: () => void;
   onReRun: (id: string) => void;
+  onDiffer?: (bool?: boolean) => void;
 }
 
 const getDiffer = async (id: string) => {
@@ -28,7 +29,12 @@ const getDiffer = async (id: string) => {
   return result;
 };
 
-export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
+export const DifferPreview = ({
+  id,
+  onClose,
+  onReRun,
+  onDiffer,
+}: DifferPreview) => {
   const [differ, setDiffer] = useState<SanitySnapshot | undefined>(undefined);
 
   useEffect(() => {
@@ -51,6 +57,10 @@ export const DifferPreview = ({ id, onClose, onReRun }: DifferPreview) => {
     bodyDiff ? "Semantic structure differs" : "Semantic structure identical",
     formattedDate,
   ];
+
+  useEffect(() => {
+    onDiffer?.(visualDiff || seoDiff);
+  }, [onDiffer, visualDiff, seoDiff]);
 
   return (
     <Dialog open onOpenChange={onClose}>

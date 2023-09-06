@@ -6,21 +6,27 @@ import { DynamicHead } from "@/components/DynamicHead";
 
 export default function Home() {
   const [preview, setPreview] = useState<string | undefined>(undefined);
+  const [differ, setDiffer] = useState<boolean | undefined>(undefined);
   const [reRunRequest, setReRunRequest] = useState<string | undefined>(
     undefined,
   );
 
+  const getFavicon = () => {
+    if (!preview) return "default";
+    if (differ) return "diff";
+    if (differ === false) return "equal";
+    return "default";
+  };
+
   return (
     <>
-      <DynamicHead />
-
+      <DynamicHead favicon={getFavicon()} />
       <header className="container py-16 text-center">
         <h1 className="text-5xl font-medium">Differ</h1>
         <p className="text-2xl font-light">
           A tool for comparing two web pages.
         </p>
       </header>
-
       <main className="container max-w-5xl">
         <DifferForm
           onPreview={(id) => id && setPreview(id)}
@@ -28,14 +34,13 @@ export default function Home() {
           reRunRequestId={reRunRequest}
         />
       </main>
-
       <Footer />
-
       {preview && (
         <DifferPreview
           id={preview}
           onClose={() => setPreview(undefined)}
           onReRun={(id) => setReRunRequest(id)}
+          onDiffer={(bool) => setDiffer(bool)}
         />
       )}
     </>
