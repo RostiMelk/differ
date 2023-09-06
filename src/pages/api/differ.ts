@@ -178,7 +178,6 @@ async function compareImages(
 }> {
   const { equal, diffImage } = await looksSame(before, after, {
     ignoreCaret: true,
-    ignoreAntialiasing: true,
     createDiffImage: true,
   });
   if (!diffImage) {
