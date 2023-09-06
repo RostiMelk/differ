@@ -113,7 +113,7 @@ async function getSnapshot(
   const imageOptions: Parameters<typeof page.screenshot>[0] = {
     fullPage: true,
     type: "jpeg",
-    quality: 90,
+    quality: 70,
   };
   const timeout = 5000;
   const injectedStyle = `
@@ -200,7 +200,7 @@ async function compareImages(
   const options = {
     ignoreCaret: true,
     ignoreAntialiasing: true,
-    tolerance: 10,
+    tolerance: 30, // Account for jpg compression
   };
   const { equal } = await looksSame(before, after, options);
 

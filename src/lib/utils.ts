@@ -40,7 +40,7 @@ export const extractSEOMetadata = async (htmlString?: string) => {
   return sortedMetadata;
 };
 
-export function isDeepEqual(objA: unknown, objB: unknown): boolean {
+export const isDeepEqual = (objA: unknown, objB: unknown): boolean => {
   // Both are of primitive type or are equal
   if (objA === objB) return true;
 
@@ -68,4 +68,4 @@ export function isDeepEqual(objA: unknown, objB: unknown): boolean {
       return false;
   }
   return true;
-}
+};

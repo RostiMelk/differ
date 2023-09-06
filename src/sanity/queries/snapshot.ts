@@ -1,8 +1,5 @@
 export const snapshotQuery = `*[_id == $id][0]{
     ...,
-    diffImage {
-      asset->
-    },
     before {
       ...,
       image {
@@ -15,4 +12,10 @@ export const snapshotQuery = `*[_id == $id][0]{
         asset->
       }
     }
+}`;
+
+export const snapshotQueryLite = `*[_id == $id][0]{
+  visualDiff,
+  metadataDiff,
+  bodyDiff,
 }`;
