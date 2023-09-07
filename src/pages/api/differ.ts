@@ -36,18 +36,24 @@ export default async function differ(
     const data = differSchema.parse(JSON.parse(req.body as string));
     const { beforeUrl, afterUrl } = data;
 
+    console.info("Creating snapshot");
     const { _id } = await privateClient.create({
       _type: "snapshot",
       date: new Date().toISOString(),
     });
 
+    console.info("Getting snapshot info");
     const { before, after } = await getSnapshot(beforeUrl, afterUrl);
+    console.info("Got snapshot");
 
     // Compare everything
+    console.info("Comparing snapshots");
     const compareRes = await compareImages(before.image, after.image);
     const metaIsEqual = await compareMetadata(before.metadata, after.metadata);
     const bodyIsEqual = compareBody(before.body, after.body);
+    console.info("Compared snapshots");
 
+    console.info("Saving snapshot");
     const createSnapshotObj = async (
       url: string,
       snapshot: PuppeteerSnapshot,
@@ -92,6 +98,9 @@ export default async function differ(
       after: afterObj,
     } satisfies SanitySnapshot);
 
+    console.info("Saved snapshot");
+    console.info("Done");
+
     return res.status(200).json({
       _id,
       message: "Success",
@@ -115,7 +124,6 @@ async function getSnapshot(
     type: "jpeg",
     quality: 70,
   };
-  const timeout = 5000;
   const injectedStyle = `
     *,
     *::before,
@@ -147,9 +155,22 @@ async function getSnapshot(
   const getSnapshotForUrl = async (url: string) => {
     await page.goto(url);
 
+    const dynamicTimeout = await page.evaluate(() => {
+      const body = document.body;
+      const html = document.documentElement;
+      const height = Math.max(
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight,
+      );
+      return Math.max(Math.floor(height / 5), 3000);
+    });
+
     await page.addStyleTag({ content: injectedStyle });
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(timeout);
+    await page.waitForTimeout(dynamicTimeout);
     await page.evaluate(() => window.scrollTo(0, 0));
     const image = (await page.screenshot(imageOptions)) as Buffer;
     const html = await page.content();
@@ -200,7 +221,7 @@ async function compareImages(
   const options = {
     ignoreCaret: true,
     ignoreAntialiasing: true,
-    tolerance: 30, // Account for jpg compression
+    tolerance: 50, // Account for jpg compression
   };
   const { equal } = await looksSame(before, after, options);
 

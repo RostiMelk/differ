@@ -150,7 +150,7 @@ export const DifferForm = ({
           state={forms[idx]?.state ?? "idle"}
           onChange={(values: DifferSchema) => {
             // check if includes comma or newline
-            if (values.beforeUrl.includes(",")) {
+            if (values.beforeUrl?.includes(",")) {
               handlePastedValues(values.beforeUrl, idx);
             } else {
               const newAllFormValues = [...allFormValues];
