@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,51 +10,88 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { differSchema, type DifferSchema } from "@/lib/types";
+import {
+  differSchema,
+  type DifferSchema,
+  type DifferResponse,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileCheck, FileDiff, Loader2, ServerCrash } from "lucide-react";
+import {
+  Loader2,
+  ServerCrash,
+  ImageIcon,
+  ImageOff,
+  SearchCheck,
+  SearchX,
+  Equal,
+  EqualNot,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 
-export type State = "idle" | "loading" | "identical" | "different" | "error";
+type State = "idle" | "loading" | "finished" | "error";
 
 interface DifferRowFormProps {
-  onSubmitRow: (data: DifferSchema) => Promise<void>;
-  isFirstRow: boolean;
-  isLastRow: boolean;
-  onChange(values: DifferSchema): void;
-  onPreview: () => void;
-  values?: DifferSchema;
-  state: State;
+  onSubmit?: (values: DifferSchema) => void;
+  isFirstRow?: boolean;
+  isLastRow?: boolean;
+  onPreview: (id?: string) => void;
+  onChanges?: (values: DifferSchema) => void;
+  values: DifferSchema | Record<string, never>;
 }
 
 export const DifferRowForm = ({
-  onSubmitRow,
+  onSubmit,
   isFirstRow,
   isLastRow,
-  onChange,
   onPreview,
+  onChanges,
   values,
-  state,
 }: DifferRowFormProps) => {
+  const [state, setState] = useState<State>("idle");
+  const [response, setResponse] = useState<DifferResponse | null>(null);
   const form = useForm({
     resolver: zodResolver(differSchema),
     mode: "onSubmit",
     values,
   });
 
-  const onSubmit = async (data: DifferSchema): Promise<void> => {
-    await onSubmitRow(data);
+  const showSubmit = state === "idle" || state === "loading";
+  const numberOfDiffs = [
+    response?.visualDiff,
+    response?.metadataDiff,
+    response?.bodyDiff,
+  ].filter(Boolean).length;
+
+  const handleFormSubmit = async (): Promise<void> => {
+    if (state === "loading" || state === "finished") return;
+    setState("loading");
+    onSubmit?.(values);
+    console.log(values);
+    const response = await fetch("/api/differ", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
+
+    if (!response.ok) {
+      setState("error");
+      return;
+    }
+
+    setResponse((await response.json()) as DifferResponse);
+    setState("finished");
   };
 
-  const showSubmit = state === "idle" || state === "loading";
+  console.log(response);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleFormSubmit)}
         className="mb-4 space-y-8"
-        onChange={() => onChange(form.getValues())}
+        onChange={() => {
+          onChanges?.(form.getValues() as DifferSchema);
+        }}
       >
         <fieldset className="grid grid-cols-[1fr,1fr,120px] gap-4">
           <FormField
@@ -100,28 +138,33 @@ export const DifferRowForm = ({
           />
 
           <div className={cn({ "mt-8": isFirstRow })}>
-            {state === "identical" && (
+            {state === "finished" && (
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="text-green-600"
-                onClick={onPreview}
-                title="Identical, click to preview"
+                className={cn("gap-1", {
+                  "text-green-600": numberOfDiffs === 0,
+                  "text-amber-500": numberOfDiffs === 1,
+                  "text-red-600": numberOfDiffs >= 2,
+                })}
+                onClick={() => onPreview?.(response?._id)}
+                title="Click to preview"
               >
-                <FileCheck className="h-4 w-4" />
-              </Button>
-            )}
-            {state === "different" && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="text-red-600"
-                onClick={onPreview}
-                title="Different, click to preview"
-              >
-                <FileDiff className="h-4 w-4" />
+                {response?.visualDiff ? (
+                  <ImageOff className="h-5 w-5" />
+                ) : (
+                  <ImageIcon className="h-5 w-5" />
+                )}
+                {response?.metadataDiff ? (
+                  <SearchX className="h-5 w-5" />
+                ) : (
+                  <SearchCheck className="h-5 w-5" />
+                )}
+                {response?.bodyDiff ? (
+                  <EqualNot className="h-5 w-5" />
+                ) : (
+                  <Equal className="h-5 w-5" />
+                )}
               </Button>
             )}
 
